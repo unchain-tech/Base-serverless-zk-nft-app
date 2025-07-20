@@ -40,7 +40,7 @@ async function run() {
   }
 
   // 失敗パターン
-  const wrongInputData = JSON.parse(fs.readFileSync("./data/wrong_input.json"));
+  const wrongInputData = JSON.parse(fs.readFileSync("./data/input_web3.json"));
 
   // proofの生成で失敗する
   const { 
