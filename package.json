@@ -1,0 +1,14 @@
+{
+  "name": "serverless_zk_nft_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "circuit": "pnpm -F \"circuit\"",
+    "backend": "pnpm -F \"backend\"",
+    "frontend": "pnpm -F \"frontend\""
+  },
+  "keywords": [],
+  "author": "mashharuki",
+  "license": "MIT"
+}
