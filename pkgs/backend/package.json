@@ -25,6 +25,8 @@
     "callWriteMethod": "npx hardhat callWriteMethod"
   },
   "devDependencies": {
+    "base64-sol": "^1.1.0",
+    "@openzeppelin/contracts": "^5.0.0",
     "@nomicfoundation/hardhat-ignition": "^0.15.0",
     "@nomicfoundation/hardhat-ignition-viem": "^0.15.0",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
