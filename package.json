@@ -4,9 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "format": "biome format --write .",
     "circuit": "pnpm -F \"circuit\"",
     "backend": "pnpm -F \"backend\"",
     "frontend": "pnpm -F \"frontend\""
+  },
+  "dependencies": {
+    "@biomejs/biome": "^1.9.4"
   },
   "keywords": [],
   "author": "mashharuki",

@@ -1,40 +1,46 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from "next";
 import path from "path";
 // @ts-ignore
-import * as snarkjs from 'snarkjs';
-
+import * as snarkjs from "snarkjs";
 
 /**
  * generateProof method
  * @param secret
  * @param secretHash
- * @returns 
+ * @returns
  */
 const generateProof = async (
-  secret: string, 
-  secretHash: string
+  secret: string,
+  secretHash: string,
 ): Promise<any> => {
   console.log(`Generating proof with inputs`);
-  
+
   // We need to have the naming scheme and shape of the inputs match the .circom file
   const inputs = {
-    secret, 
-    secretHash
-  }
+    secret,
+    secretHash,
+  };
 
   // Paths to the .wasm file and proving key
-  const wasmPath = path.join(process.cwd(), './src/zk/PasswordHash.wasm');
-  const provingKeyPath = path.join(process.cwd(), './src/zk/PasswordHash_final.zkey')
+  const wasmPath = path.join(process.cwd(), "./src/zk/PasswordHash.wasm");
+  const provingKeyPath = path.join(
+    process.cwd(),
+    "./src/zk/PasswordHash_final.zkey",
+  );
 
   try {
     // Generate a proof of the circuit and create a structure for the output signals
-    const { 
-      proof, 
-      publicSignals 
-    } = await snarkjs.groth16.fullProve(inputs, wasmPath, provingKeyPath);
+    const { proof, publicSignals } = await snarkjs.groth16.fullProve(
+      inputs,
+      wasmPath,
+      provingKeyPath,
+    );
 
     // get call data
-    const calldataBlob = await snarkjs.groth16.exportSolidityCallData(proof, publicSignals);
+    const calldataBlob = await snarkjs.groth16.exportSolidityCallData(
+      proof,
+      publicSignals,
+    );
 
     const regex = /\[([^[]*)\]/g;
     const matches = calldataBlob.match(regex);
@@ -48,27 +54,27 @@ const generateProof = async (
     }
 
     return {
-      proof_a: JSON.parse(matches[0]), 
-      proof_b: JSON.parse("[" + matches[1] + "," + matches[2]), 
-      proof_c: JSON.parse(matches[3]), 
+      proof_a: JSON.parse(matches[0]),
+      proof_b: JSON.parse("[" + matches[1] + "," + matches[2]),
+      proof_c: JSON.parse(matches[3]),
       publicSignals: JSON.parse(matches[4]),
-    }
+    };
   } catch (err) {
-    console.log(`Error:`, err)
+    console.log(`Error:`, err);
     return {
-      proof_a: "", 
-      proof_b: "", 
-      proof_c: "", 
+      proof_a: "",
+      proof_b: "",
+      proof_c: "",
       publicSignals: [],
-    }
+    };
   }
-}
+};
 
 /**
  * zk用のproofを生成するためのAPI
- * @param req 
- * @param res 
- * @returns 
+ * @param req
+ * @param res
+ * @returns
  */
 export default async function handler(
   req: NextApiRequest,
@@ -76,7 +82,7 @@ export default async function handler(
 ) {
   const body = req?.body;
   if (body === undefined) {
-    return res.status(403).json({error: "Request has no body"});
+    return res.status(403).json({ error: "Request has no body" });
   }
   console.log(body);
 
@@ -84,13 +90,13 @@ export default async function handler(
   const input1 = body.input1;
 
   if (input0 === undefined || input1 === undefined) {
-    return res.status(403).json({error: "Invalid inputs"});
+    return res.status(403).json({ error: "Invalid inputs" });
   }
   // call generateProof method
   const proof = await generateProof(input0, input1);
 
   if (proof.proof === "") {
-    return res.status(403).json({error: "Proving failed"});
+    return res.status(403).json({ error: "Proving failed" });
   }
 
   res.setHeader("Content-Type", "text/json");

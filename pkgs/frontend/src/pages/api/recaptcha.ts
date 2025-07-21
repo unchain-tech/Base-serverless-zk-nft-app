@@ -6,11 +6,11 @@ export type ReCaptchaType = {
   hostname: string;
   score: number;
   action: string;
-}
+};
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ReCaptchaType>
+  res: NextApiResponse<ReCaptchaType>,
 ) {
   // reCAPTCHA認証サーバーに認証リクエストをPOSTし、認証結果を受け取る
   const serverSecretKey = `secret=${process.env.RECAPTCHA_SERVER_SECRET_KEY!}&response=${req.body.token}`;
@@ -23,10 +23,10 @@ export default async function handler(
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: serverSecretKey,
-    }
+    },
   );
-  const responceJson_recaptcha:ReCaptchaType = await responce_recaptcha.json();
+  const responceJson_recaptcha: ReCaptchaType = await responce_recaptcha.json();
   console.log("responceJson_recaptcha:", responceJson_recaptcha);
-  
+
   res.status(200).json(responceJson_recaptcha);
 }

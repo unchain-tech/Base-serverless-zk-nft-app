@@ -57,13 +57,13 @@
     - スマートコントラクトのデプロイ
 
       ```bash
-      pnpm backend run deploy --network baseSepolia
+      pnpm backend run deploy:Lock --network baseSepolia
       ```
 
     - スマートコントラクトを verify
 
       ```bash
-      pnpm backend run verify --network baseSepolia <コントラクトのアドレス> <PasswordHashVerifierコントラクトのアドレス>
+      pnpm backend run verify --chain 84532
       ```
 
     - NFT をミントする

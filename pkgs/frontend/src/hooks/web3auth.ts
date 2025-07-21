@@ -12,10 +12,7 @@ var idToken;
 /**
  * ログイン メソッド
  */
-export const login = async(
-  chainId: number,
-  rpcUrl: string
-) => {
+export const login = async (chainId: number, rpcUrl: string) => {
   // get env
   const env: ResponseData = await getEnv();
 
@@ -24,14 +21,14 @@ export const login = async(
     web3AuthNetwork: "testnet",
     chainConfig: {
       chainNamespace: CHAIN_NAMESPACES.EIP155,
-      chainId: await decimalToHex(chainId), 
-      rpcTarget: rpcUrl
+      chainId: await decimalToHex(chainId),
+      rpcTarget: rpcUrl,
     },
   });
 
   // initModal
   await web3auth.initModal();
-    
+
   await web3auth.connect();
   const authenticateUser = await web3auth.authenticateUser();
   // set idToken
@@ -45,22 +42,22 @@ export const login = async(
   const signer = new Wallet(pKey, provider) as any;
 
   return signer;
-}
+};
 
 /**
  * logout method
  */
-export const logout = async() => {
+export const logout = async () => {
   // logout
   await web3auth.logout();
-}
+};
 
 /**
  * getPrivateKey method
- * @param provider 
- * @returns 
+ * @param provider
+ * @returns
  */
-const getPrivateKey = async(provider: SafeEventEmitterProvider) => {
+const getPrivateKey = async (provider: SafeEventEmitterProvider) => {
   return (await provider.request({
     method: "private_key",
   })) as string;
