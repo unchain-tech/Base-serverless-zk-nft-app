@@ -1,40 +1,20 @@
 pragma circom 2.0.0;
 
-include "./../node_modules/circomlib/circuits/bitify.circom";
-include "./../node_modules/circomlib/circuits/pedersen.circom";
+include "../node_modules/circomlib/circuits/poseidon.circom";
 
 /**
  * ハッシュ値を生成するメソッド
  */
-template SecretHasher() {
-  signal input secret;
-  signal output secretHash;
+template PasswordCheck() {
+  // 入力値を取得
+  signal input password;      
+  signal input hash;    
 
-  component secretHasher = Pedersen(248);
-  component secretBits = Num2Bits(248);
-
-  secretBits.in <== secret;
-
-  for (var i = 0; i < 248; i++) {
-    secretHasher.in[i] <== secretBits.out[i];
-  }
-  // ハッシュ値を生成
-  secretHash <== secretHasher.out[0];
+  component poseidon = Poseidon(1);
+  poseidon.inputs[0] <== password;
+  hash === poseidon.out;  // ハッシュ値の一致を検証(true or falseを返す)
 }
 
-/**
- * メインとなるサーキット
- */
-template Main() {
-  // パブリックインプット
-  signal input secretHash;
-  // プライベートインプット  
-  signal input secret;      
-  // ハッシュ値を生成
-  component hasher = SecretHasher();  
-  hasher.secret <== secret; 
-  // 同値だったらtrueを返す。
-  secretHash === hasher.secretHash;
-}
-
-component main {public [secretHash]} = Main(); 
+// パブリック入力： パスワードのハッシュ値
+// プライベート入力： パスワード
+component main {public [hash]} = PasswordCheck();

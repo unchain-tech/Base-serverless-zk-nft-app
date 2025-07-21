@@ -10,7 +10,7 @@
 #include "circom.hpp"
 #include "fr.hpp"
 
-#define NMUTEXES 12 //512
+#define NMUTEXES 32 //512
 
 u64 fnv1a(std::string s);
 
@@ -26,15 +26,16 @@ public:
   FrElement *signalValues;
   Circom_Component* componentMemory;
   FrElement* circuitConstants; 
-  std::map<u32,IODefPair> templateInsId2IOSignalInfo; 
+  std::map<u32,IOFieldDefPair> templateInsId2IOSignalInfo; 
+  IOFieldDefPair* busInsId2FieldInfo;
   std::string* listOfTemplateMessages; 
 
   // parallelism
   std::mutex numThreadMutex;
   std::condition_variable ntcvs;
-  uint numThread;
+  int numThread;
 
-  uint maxThread;
+  int maxThread;
 
   // Functions called by the circuit
   Circom_CalcWit(Circom_Circuit *aCircuit, uint numTh = NMUTEXES);

@@ -20,15 +20,17 @@ struct __attribute__((__packed__)) HashSignalInfo {
     u64 signalsize; 
 };
 
-struct IODef { 
+struct IOFieldDef { 
     u32 offset;
     u32 len;
     u32 *lengths;
+    u32 size;
+    u32 busId;
 };
 
-struct IODefPair { 
+struct IOFieldDefPair { 
     u32 len;
-    IODef* defs;
+    IOFieldDef* defs;
 };
 
 struct Circom_Circuit {
@@ -36,7 +38,8 @@ struct Circom_Circuit {
   HashSignalInfo* InputHashMap;
   u64* witness2SignalList;
   FrElement* circuitConstants;  
-  std::map<u32,IODefPair> templateInsId2IOSignalInfo;
+  std::map<u32,IOFieldDefPair> templateInsId2IOSignalInfo;
+  IOFieldDefPair* busInsId2FieldInfo;
 };
 
 
@@ -47,12 +50,12 @@ struct Circom_Component {
   std::string templateName;
   std::string componentName;
   u64 idFather; 
-  u32* subcomponents;
-  bool* subcomponentsParallel;
-  bool *outputIsSet;  //one for each output
-  std::mutex *mutexes;  //one for each output
-  std::condition_variable *cvs;
-  std::thread *sbct; //subcomponent threads
+  u32* subcomponents = NULL;
+  bool* subcomponentsParallel = NULL;
+  bool *outputIsSet = NULL;  //one for each output
+  std::mutex *mutexes = NULL;  //one for each output
+  std::condition_variable *cvs = NULL;
+  std::thread *sbct = NULL;//subcomponent threads
 };
 
 /*
@@ -81,5 +84,6 @@ uint get_size_of_input_hashmap();
 uint get_size_of_witness();
 uint get_size_of_constants();
 uint get_size_of_io_map();
+uint get_size_of_bus_field_map();
 
 #endif  // __CIRCOM_H
