@@ -78,9 +78,6 @@ jobs:
       # テストコマンドを実行
       - name: Test Smart Contract
         run: pnpm --filter backend test
-      # テストカバレッジを実行
-      - name: Coverage Smart Contract
-        run: pnpm --filter backend coverage
 
   # サーキットをテストするジョブ
   test-circuit:

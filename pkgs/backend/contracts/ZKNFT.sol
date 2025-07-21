@@ -53,7 +53,15 @@ contract ZKNFT is ERC721 {
   /*************************
    * Public View Functions *
    *************************/
-  function tokenURI(uint256 _tokenId) public view override(ERC721) returns (string memory) {
+  
+  /**
+   * @dev Returns the total number of tokens minted
+   */
+  function totalSupply() public view returns (uint256) {
+    return _nextTokenId;
+  }
+
+  function tokenURI(uint256 /* _tokenId */) public pure override(ERC721) returns (string memory) {
     return
       string(
         abi.encodePacked(

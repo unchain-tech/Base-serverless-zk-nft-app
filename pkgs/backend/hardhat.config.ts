@@ -23,18 +23,19 @@ const config: HardhatUserConfig = {
     hardhat: {
       allowUnlimitedContractSize: true,
     },
-    baseSepolia: {
+    "base-sepolia": {
       url: `https://base-sepolia.g.alchemy.com/v2/${ALCHMEY_API_KEY}`,
       accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
+      chainId: 84532,
     },
   },
   etherscan: {
     apiKey: {
-      baseSepolia: BASESCAN_API_KEY || "",
+      "base-sepolia": BASESCAN_API_KEY || "",
     },
     customChains: [
       {
-        network: "baseSepolia",
+        network: "base-sepolia",
         chainId: 84532,
         urls: {
           apiURL: "https://api-sepolia.basescan.org/api",
