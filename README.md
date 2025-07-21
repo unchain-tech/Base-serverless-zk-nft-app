@@ -57,13 +57,13 @@
     - スマートコントラクトのデプロイ
 
       ```bash
-      pnpm backend run deploy:Lock --network baseSepolia
+      pnpm backend run deploy:ZKNFT --network baseSepolia
       ```
 
     - スマートコントラクトを verify
 
       ```bash
-      pnpm backend run verify --chain 84532
+      pnpm backend run verify chain-84532 --include-unrelated-contracts
       ```
 
     - NFT をミントする
