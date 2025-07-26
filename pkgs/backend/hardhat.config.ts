@@ -1,5 +1,4 @@
 import "@nomicfoundation/hardhat-toolbox-viem";
-import "@nomicfoundation/hardhat-verify";
 import * as dotenv from "dotenv";
 import type { HardhatUserConfig } from "hardhat/config";
 import "./tasks";
@@ -12,7 +11,7 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: "0.8.30",
+        version: "0.8.28",
         settings: {
           viaIR: true,
         },

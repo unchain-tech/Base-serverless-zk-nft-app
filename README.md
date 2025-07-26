@@ -66,6 +66,12 @@
       pnpm backend run verify chain-84532 --include-unrelated-contracts
       ```
 
+    - 総発行数を取得する
+
+      ```bash
+      pnpm backend run totalSupply --network base-sepolia
+      ```
+
     - NFT をミントする
 
       ```bash
