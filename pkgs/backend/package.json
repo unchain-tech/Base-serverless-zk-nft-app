@@ -16,14 +16,11 @@
     "test": "npx hardhat test",
     "verify": "npx hardhat ignition verify",
     "coverage": "SOLIDITY_COVERAGE=true npx hardhat coverage",
-    "deploy:Lock": "npx hardhat ignition deploy ./ignition/modules/Lock.ts --verify",
     "deploy:ZKNFT": "npx hardhat ignition deploy ./ignition/modules/ZKNFT.ts --verify",
     "local": "npx hardhat node",
     "getBalance": "npx hardhat getBalance",
     "getChainInfo": "npx hardhat getChainInfo",
-    "getContractAddress": "npx hardhat getContractAddress",
-    "callReadMethod": "npx hardhat callReadMethod",
-    "callWriteMethod": "npx hardhat callWriteMethod"
+    "getContractAddress": "npx hardhat getContractAddress"
   },
   "devDependencies": {
     "base64-sol": "^1.1.0",
