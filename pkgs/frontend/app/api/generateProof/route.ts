@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     // 回路の入力データを作成
     const input = {
       password: passwordNumber,
-      passwordHash: process.env.PASSWORD_HASH || "",
+      hash: process.env.PASSWORD_HASH || "",
     };
 
     // WAsmファイルとzkeyファイルのパスを設定（publicディレクトリから読み込み）
