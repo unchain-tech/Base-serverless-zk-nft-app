@@ -29,9 +29,6 @@ importers:
       '@nomicfoundation/hardhat-verify':
         specifier: ^2.0.0
         version: 2.1.0(hardhat@2.26.1)
-      '@nomicfoundation/hardhat-viem':
-        specifier: ^2.0.0
-        version: 2.1.0(hardhat@2.26.1)(typescript@5.0.4)(viem@2.33.1)
       '@openzeppelin/contracts':
         specifier: ^5.0.0
         version: 5.4.0

@@ -20,9 +20,6 @@ const config: HardhatUserConfig = {
     ],
   },
   networks: {
-    hardhat: {
-      allowUnlimitedContractSize: true,
-    },
     "base-sepolia": {
       url: `https://base-sepolia.g.alchemy.com/v2/${ALCHMEY_API_KEY}`,
       accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
