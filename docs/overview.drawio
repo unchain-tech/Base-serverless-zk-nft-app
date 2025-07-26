@@ -1,0 +1,127 @@
+<mxfile host="65bd71144e">
+    <diagram name="ZK-NFT System Architecture" id="zk-nft-system">
+        <mxGraphModel dx="521" dy="573" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="user" value="User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="50" width="30" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="frontend-cluster" value="Frontend (Next.js)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="30" width="280" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="nextjs" value="Next.js App&#xa;(Dashboard UI)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="frontend-cluster" vertex="1">
+                    <mxGeometry x="20" y="30" width="80" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="privy" value="Privy Auth&#xa;(Wallet Auth)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="frontend-cluster" vertex="1">
+                    <mxGeometry x="120" y="30" width="70" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="biconomy" value="Biconomy&#xa;(Gasless Tx)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="frontend-cluster" vertex="1">
+                    <mxGeometry x="200" y="30" width="70" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="zk-cluster" value="Zero Knowledge Proof System" style="swimlane;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="540" y="30" width="300" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="circuit" value="Circom Circuit&#xa;(PasswordHash.circom)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="zk-cluster" vertex="1">
+                    <mxGeometry x="20" y="30" width="80" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="zkproof" value="ZK Proof&#xa;Generation&#xa;(snarkjs)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="zk-cluster" vertex="1">
+                    <mxGeometry x="120" y="30" width="70" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="verifier" value="Verifier&#xa;Contract" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="zk-cluster" vertex="1">
+                    <mxGeometry x="210" y="30" width="70" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="contract-cluster" value="Smart Contract (Hardhat)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="200" width="250" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="zknft" value="ZKNFT Contract&#xa;(ERC721 + ZK)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="contract-cluster" vertex="1">
+                    <mxGeometry x="20" y="30" width="100" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="interface" value="IPasswordHash&#xa;Verifier&#xa;Interface" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="contract-cluster" vertex="1">
+                    <mxGeometry x="140" y="30" width="90" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="blockchain" value="Base Sepolia&#xa;Testnet" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f0f0f0;strokeColor=#666666;" parent="1" vertex="1">
+                    <mxGeometry x="370" y="350" width="100" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="marketplace" value="Rarible Testnet&#xa;(NFT Marketplace)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="450" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="flow1" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="user" target="nextjs" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="400" y="300" as="sourcePoint"/>
+                        <mxPoint x="450" y="250" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow1-label" value="1. Login &amp; Password Input" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="120" y="40" width="150" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="flow2" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="nextjs" target="circuit" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="400" y="300" as="sourcePoint"/>
+                        <mxPoint x="450" y="250" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow2-label" value="2. Password Hash" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="380" y="40" width="100" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="flow3" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="circuit" target="zkproof" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="400" y="300" as="sourcePoint"/>
+                        <mxPoint x="450" y="250" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow4" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="zkproof" target="verifier" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="400" y="300" as="sourcePoint"/>
+                        <mxPoint x="450" y="250" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow5" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="verifier" target="zknft" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="400" y="300" as="sourcePoint"/>
+                        <mxPoint x="450" y="250" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow5-label" value="3. Proof Verification" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="160" width="110" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="flow6" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="zknft" target="blockchain" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="400" y="300" as="sourcePoint"/>
+                        <mxPoint x="450" y="250" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow6-label" value="4. NFT Mint" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="380" y="310" width="80" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="flow7" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" source="blockchain" target="marketplace" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="400" y="500" as="sourcePoint"/>
+                        <mxPoint x="450" y="450" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow7-label" value="5. View NFT" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="450" width="80" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="flow8" value="" style="endArrow=classic;html=1;rounded=0;dashed=1;" parent="1" source="user" target="marketplace" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="400" y="500" as="sourcePoint"/>
+                        <mxPoint x="450" y="450" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow8-label" value="6. Browse NFTs" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="350" width="100" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="title" value="ZK-NFT System Architecture Overview" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=16;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="400" width="280" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="description" value="This system combines Zero Knowledge Proofs with NFT minting.&#xa;Users must provide a correct password to generate a valid ZK proof for NFT minting." style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="450" width="400" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="tech-stack" value="Technology Stack:&#xa;• Frontend: Next.js, Privy (Auth), Biconomy (Account Abstraction)&#xa;• ZK: Circom, snarkjs, Groth16&#xa;• Smart Contract: Solidity, Hardhat, OpenZeppelin&#xa;• Blockchain: Base Sepolia Testnet&#xa;• Marketplace: Rarible Testnet" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="500" width="400" height="100" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
