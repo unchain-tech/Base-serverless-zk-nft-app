@@ -1,6 +1,7 @@
 "use client";
 
 import { usePrivy } from "@privy-io/react-auth";
+import { useBiconomy } from "hooks/useBiconomy";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -23,7 +24,8 @@ import { generateProof, hashPassword } from "./../../lib/zk-utils";
  */
 export default function DashboardPage() {
   const router = useRouter();
-  const { ready, authenticated, user } = usePrivy();
+  const { ready, authenticated } = usePrivy();
+  const { initializeBiconomyAccount, mintNFT } = useBiconomy();
 
   // NFTミント用のstate
   const [password, setPassword] = useState("");
@@ -84,17 +86,19 @@ export default function DashboardPage() {
         throw new Error(proofResult.error || "プルーフの生成に失敗しました");
       }
 
+      console.log("Proof Result:", proofResult.data);
+
       toast.loading("NFTをミント中...", { id: "minting" });
 
-      setPassword("");
+      // Biconomyを使ってNFTをミント
+      await initializeBiconomyAccount();
+      await mintNFT(proofResult.data.proof, proofResult.data.publicSignals);
 
+      setPassword("");
       toast.success("NFTのミントが完了しました！", { id: "minting" });
     } catch (error) {
       console.error("Mint error:", error);
-      toast.error(
-        `NFTのミントに失敗しました: ${error instanceof Error ? error.message : "不明なエラー"}`,
-        { id: "minting" },
-      );
+      toast.error("正しいパスワードを入力してください。", { id: "minting" });
     } finally {
       setIsMinting(false);
     }

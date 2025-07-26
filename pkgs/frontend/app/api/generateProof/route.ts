@@ -74,8 +74,6 @@ export async function POST(request: NextRequest) {
       zkeyPath,
     );
 
-    console.log("Proof generated successfully:", proof);
-
     // プルーフをフォーマット（コントラクト用）
     const solidityProof = {
       a: [proof.pi_a[0], proof.pi_a[1]],
