@@ -72,7 +72,7 @@ export async function generateProof(
 ): Promise<GenerateProofResponse> {
   try {
     // APIを呼び出す
-    const response = await fetch("/api/generate-proof", {
+    const response = await fetch("/api/generateProof", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

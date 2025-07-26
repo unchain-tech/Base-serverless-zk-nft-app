@@ -1,8 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import fs from "node:fs";
 import path from "node:path";
-// @ts-ignore
-const snarkjs = require("snarkjs");
 
 /**
  * ZK Proofを生成するAPIエンドポイント
@@ -19,6 +18,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    // snarkjsをdynamic importで読み込み
+    const snarkjs = await import("snarkjs");
+
     const { passwordNumber } = await request.json();
 
     if (!passwordNumber || typeof passwordNumber !== "string") {
@@ -31,16 +33,39 @@ export async function POST(request: NextRequest) {
     // 回路の入力データを作成
     const input = {
       password: passwordNumber,
-      passwordHash: process.env.PASSWORD_HASH,
+      passwordHash: process.env.PASSWORD_HASH || "",
     };
 
-    console.log("Input for proof generation:", input);
+    // WAsmファイルとzkeyファイルのパスを設定（publicディレクトリから読み込み）
+    const wasmPath = path.join(
+      process.cwd(),
+      "public",
+      "zk",
+      "PasswordHash.wasm",
+    );
+    const zkeyPath = path.join(
+      process.cwd(),
+      "public",
+      "zk",
+      "PasswordHash_final.zkey",
+    );
 
-    // WAsmファイルとzkeyファイルのパスを設定
-    const wasmPath = path.join(process.cwd(), "zk", "PasswordHash.wasm");
-    const zkeyPath = path.join(process.cwd(), "zk", "PasswordHash_final.zkey");
+    // ファイルの存在確認
+    if (!fs.existsSync(wasmPath)) {
+      console.error("WASM file not found:", wasmPath);
+      return NextResponse.json(
+        { error: "WASM ファイルが見つかりません" },
+        { status: 500 },
+      );
+    }
 
-    console.log("wasmPath:", wasmPath);
+    if (!fs.existsSync(zkeyPath)) {
+      console.error("zkey file not found:", zkeyPath);
+      return NextResponse.json(
+        { error: "zkey ファイルが見つかりません" },
+        { status: 500 },
+      );
+    }
 
     // プルーフを生成
     const { proof, publicSignals } = await snarkjs.groth16.fullProve(
