@@ -122,3 +122,5 @@
 
 ## デプロイ済みのコントラクト情報
 
+## 参考文献
+- [Rarible - Testnet](https://testnet.rarible.com/user/0x51908f598a5e0d8f1a3babfa6df76f9704dad072/owned)
