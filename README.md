@@ -1,5 +1,9 @@
 # ブロックチェーンとゼロ知識証明で作るフルスタックサーバーレスアプリケーション
 
+## 動かす時の注意事項
+
+パスワードを変える時はサーキットのコンパイルからやり直すこと！
+
 ## 動かし方
 
 - インストール
@@ -16,6 +20,22 @@
       pnpm circuit run compile
       ```
 
+    - Inputデータを生成する。
+
+      `pkgs/circuit/scripts/generateInput.js` ファイルの7行目の部分は自分の設定したい好きなパスワードを指定すること
+
+      ```ts
+      const input = "serverless";
+      ```
+
+      設定したら以下のコマンドを実行
+
+      ```bash
+      pnpm circuit run generateInput
+      ```
+
+      生成された値のうち、 `inputNumber` と `hash` を `pkgs/circuit/data/input.json`に貼り付ける
+
     - verify 用の solidity ファイルなどを生成する
 
       ```bash
@@ -26,6 +46,12 @@
 
       ```bash
       pnpm circuit run generateWitness
+      ```
+
+    - Proofの生成と検証のテスト
+
+      ```bash
+      pnpm circuit run test
       ```
 
     - verify 用の Solidity ファイルを backend フォルダ配下に移す
@@ -56,6 +82,8 @@
 
     - スマートコントラクトのデプロイ
 
+      もしすでにデプロイ済みであれば `--reset` オプションをつけて実行すること
+ 
       ```bash
       pnpm backend run deploy:ZKNFT --network base-sepolia
       ```

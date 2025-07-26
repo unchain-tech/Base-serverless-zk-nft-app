@@ -4,7 +4,7 @@ const circomlibjs = require("circomlibjs");
  * Generate input data for the circuit
  */
 const main = async () => {
-  const input = "web3";
+  const input = "serverless";
   const poseidon = await circomlibjs.buildPoseidon();
 
   // Convert string to bytes and then to BigInt array
