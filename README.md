@@ -76,6 +76,16 @@
 
   - `backend`側
 
+    - 環境変数のセットアップ
+
+      `.env`ファイルを作成し、以下の値を設定する
+
+      ```txt
+      PRIVATE_KEY=""
+      ALCHMEY_API_KEY=""
+      BASESCAN_API_KEY=""
+      ```
+
     - コンパイル
 
       ```bash
@@ -115,6 +125,18 @@
       ```
 
   - `frontend`側
+
+    - 環境変数のセットアップ
+
+      `.env.local`ファイルを作成し、以下の値を設定する
+
+      ```txt
+      # Privy Auth Settings
+      NEXT_PUBLIC_PRIVY_APP_ID=
+
+      # PASSWORD_HASH Settings
+      PASSWORD_HASH=
+      ```
 
     - ビルド
 
