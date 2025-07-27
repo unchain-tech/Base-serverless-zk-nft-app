@@ -100,20 +100,31 @@ function AuthenticatedDashboard() {
       toast.loading("NFTをミント中...", { id: "minting" });
 
       // Biconomyを初期化してSmart Walletを作成する
-      const smartWalletAddress = await initializeBiconomyAccount();
+      const { nexusClient, address: smartWalletAddress } =
+        await initializeBiconomyAccount();
+
+      if (!smartWalletAddress) {
+        throw new Error("Smart wallet initialization failed");
+      }
+
       console.log("Smart wallet Address:", smartWalletAddress);
+
       // NFTをミントする
       const hash = await mintNFT(
+        nexusClient,
         proofResult.data.proof,
         proofResult.data.publicSignals,
       );
+
       console.log("Minted NFT transaction hash:", hash);
 
       setPassword("");
       toast.success("NFTのミントが完了しました！", { id: "minting" });
     } catch (error) {
       console.error("Mint error:", error);
-      toast.error("正しいパスワードを入力してください。", { id: "minting" });
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      toast.error(`エラーが発生しました: ${errorMessage}`, { id: "minting" });
     } finally {
       setIsMinting(false);
     }
