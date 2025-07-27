@@ -152,3 +152,5 @@ jobs:
       # フロントエンドのビルドを実行
       - name: Build Frontend
         run: pnpm --filter frontend build
+        env:
+          NEXT_PUBLIC_PRIVY_APP_ID: dteg0a87f76ih13j8tbkj4rtg # ダミー値
