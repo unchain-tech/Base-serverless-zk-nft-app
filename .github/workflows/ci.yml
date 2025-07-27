@@ -1,4 +1,4 @@
-name: Build and Test SmartContract on GitHub Actions
+name: Build & Test on GitHub Actions
 
 on:
   push:

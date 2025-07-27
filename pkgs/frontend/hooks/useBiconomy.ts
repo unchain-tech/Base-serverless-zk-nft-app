@@ -82,6 +82,13 @@ export const useBiconomy = () => {
       });
 
       console.log("Nexus Account:", nexusAccount.signer.address);
+
+      const authorization = await signAuthorization({
+        contractAddress: NEXUS_IMPLEMENTATION,
+        chainId: 0,
+      });
+
+      console.log("Authorization:", authorization);
       // Create Mee Client
       const meeClient = await createMeeClient({ account: nexusAccount });
 
@@ -107,7 +114,7 @@ export const useBiconomy = () => {
       }));
       return null;
     }
-  }, [embeddedWallet]);
+  }, [embeddedWallet, signAuthorization]);
 
   /**
    * NFTをミントするためのメソッド
