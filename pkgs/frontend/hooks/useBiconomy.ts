@@ -1,4 +1,7 @@
 import {
+  type Instruction,
+  type MeeClient,
+  type MultichainSmartAccount,
   createMeeClient,
   toMultichainNexusAccount,
 } from "@biconomy/abstractjs";
@@ -10,13 +13,20 @@ import {
   ZKNFT_CONTRACT_ADDRESS,
 } from "lib/utils";
 import { useCallback, useState } from "react";
-import { createWalletClient, custom, http } from "viem";
+import { type Abi, createWalletClient, custom, http } from "viem";
 import { baseSepolia } from "viem/chains";
+
+// ゼロ知識証明のデータ構造を定義する型
+interface ZKProof {
+  a: [string, string];
+  b: [[string, string], [string, string]];
+  c: [string, string];
+}
 
 // Biconomyアカウントの状態を管理する型
 interface BiconomyAccountState {
-  smartAccount: any;
-  nexusAccount: any;
+  smartAccount: MeeClient | null;
+  nexusAccount: MultichainSmartAccount | null;
   address: string | null;
   isLoading: boolean;
   error: string | null;
@@ -86,7 +96,7 @@ export const useBiconomy = () => {
         error: null,
       });
 
-      return embeddedWallet.address;
+      return meeClient.account.signer.address;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
@@ -107,15 +117,17 @@ export const useBiconomy = () => {
    * @returns トランザクションハッシュ値
    */
   const mintNFT = useCallback(
-    async (proof: any, publicSignals: string[]): Promise<string | null> => {
+    async (proof: ZKProof, publicSignals: string[]): Promise<string | null> => {
       if (!accountState.smartAccount) return Promise.resolve(null);
+
+      console.log("Minting NFT with proof:", proof);
 
       // 実行したいトランザクションデータの構築
       const runtimeInstruction =
-        await accountState.nexusAccount.buildComposable({
+        await accountState.nexusAccount?.buildComposable({
           type: "default",
           data: {
-            abi: ZKNFT_ABI,
+            abi: ZKNFT_ABI as Abi,
             functionName: "safeMint",
             chainId: baseSepolia.id,
             to: ZKNFT_CONTRACT_ADDRESS,
@@ -136,23 +148,29 @@ export const useBiconomy = () => {
 
       console.log("Authorization:", authorization);
 
+      // スマートアカウントを使用してトランザクションを実行
       const { hash } = await accountState.smartAccount.execute({
         authorization,
         delegate: true,
-        // Gas paid with USDC on Optimism
+        // Gas paid with USDC on Base Sepolia
         feeToken: {
           address: USDC_ADDRESS,
           chainId: baseSepolia.id,
         },
 
-        instructions: [runtimeInstruction],
+        instructions: [runtimeInstruction as Instruction[]],
       });
 
       console.log("Submitted tx hash:", hash);
 
       return hash;
     },
-    [accountState.smartAccount],
+    [
+      accountState.smartAccount,
+      accountState.nexusAccount,
+      embeddedWallet?.address,
+      signAuthorization,
+    ],
   );
 
   return {
