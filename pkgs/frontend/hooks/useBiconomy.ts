@@ -89,8 +89,12 @@ export const useBiconomy = () => {
       });
 
       console.log("Authorization:", authorization);
+
       // Create Mee Client
-      const meeClient = await createMeeClient({ account: nexusAccount });
+      const meeClient = await createMeeClient({
+        account: nexusAccount,
+        apiKey: process.env.NEXT_PUBLIC_MEE_API_KEY,
+      });
 
       console.log("Biconomy Mee Client:", meeClient.account);
       console.log("done initializing Biconomy account");

@@ -154,3 +154,4 @@
 
 ## 参考文献
 - [Rarible - Testnet](https://testnet.rarible.com/user/0x51908f598a5e0d8f1a3babfa6df76f9704dad072/owned)
+- [GitHub - Biconomy Next.js サンプルリポジトリ](https://github.com/bcnmy/examples/tree/main/nextjs-quickstart)
