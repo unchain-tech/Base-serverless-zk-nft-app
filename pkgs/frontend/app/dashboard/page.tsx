@@ -19,25 +19,15 @@ import { Label } from "../../components/ui/label";
 import { LoadingSpinner } from "../../components/ui/loading";
 import { generateProof, hashPassword } from "./../../lib/zk-utils";
 
+// 動的レンダリングを強制してプリレンダリングエラーを回避
+export const dynamic = "force-dynamic";
+
 /**
  * ダッシュボード（NFTミント画面）コンポーネント
  */
 export default function DashboardPage() {
   const router = useRouter();
   const { ready, authenticated } = usePrivy();
-  const { initializeBiconomyAccount, mintNFT } = useBiconomy();
-
-  // NFTミント用のstate
-  const [password, setPassword] = useState("");
-  const [tokenURI, setTokenURI] = useState("");
-  const [isMinting, setIsMinting] = useState(false);
-  const [mintedTokens, setMintedTokens] = useState<
-    Array<{
-      tokenId: string;
-      tokenURI: string;
-      transactionHash: string;
-    }>
-  >([]);
 
   // 未認証の場合はログイン画面にリダイレクト
   useEffect(() => {
@@ -59,6 +49,27 @@ export default function DashboardPage() {
   if (!authenticated) {
     return null;
   }
+
+  // 認証済みの場合にのみダッシュボードコンテンツを表示
+  return <AuthenticatedDashboard />;
+}
+
+/**
+ * 認証済みユーザー向けのダッシュボードコンテンツ
+ */
+function AuthenticatedDashboard() {
+  const { initializeBiconomyAccount, mintNFT } = useBiconomy();
+
+  // NFTミント用のstate
+  const [password, setPassword] = useState("");
+  const [isMinting, setIsMinting] = useState(false);
+  const [mintedTokens, setMintedTokens] = useState<
+    Array<{
+      tokenId: string;
+      tokenURI: string;
+      transactionHash: string;
+    }>
+  >([]);
 
   /**
    * NFTをミントするハンドラーメソッド
@@ -83,7 +94,7 @@ export default function DashboardPage() {
       const proofResult = await generateProof(passwordNumber);
 
       if (!proofResult.success || !proofResult.data) {
-        throw new Error(proofResult.error || "プルーフの生成に失敗しました");
+        throw new Error(proofResult.error || "failed to generate proof");
       }
 
       console.log("Proof Result:", proofResult.data);

@@ -31,9 +31,8 @@ export const useBiconomy = () => {
   const { wallets } = useWallets();
   const { signAuthorization } = useSign7702Authorization();
 
+  // エンベデッドウォレットの取得（エラーハンドリング改善）
   const embeddedWallet = wallets?.[0];
-
-  if (!embeddedWallet) throw new Error("No embedded wallet found");
 
   // Biconomyアカウントの状態を管理する
   const [accountState, setAccountState] = useState<BiconomyAccountState>({
@@ -54,7 +53,7 @@ export const useBiconomy = () => {
   > => {
     try {
       setAccountState((prev) => ({ ...prev, isLoading: true, error: null }));
-
+      // base Sepoliaチェーンに切り替え
       await embeddedWallet.switchChain(baseSepolia.id);
       const provider = await embeddedWallet.getEthereumProvider();
 
