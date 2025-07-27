@@ -100,10 +100,14 @@ function AuthenticatedDashboard() {
       toast.loading("NFTをミント中...", { id: "minting" });
 
       // Biconomyを初期化してSmart Walletを作成する
-      const meeClientAddress = await initializeBiconomyAccount();
-      console.log("Mee Client Address:", meeClientAddress);
+      const smartWalletAddress = await initializeBiconomyAccount();
+      console.log("Smart wallet Address:", smartWalletAddress);
       // NFTをミントする
-      await mintNFT(proofResult.data.proof, proofResult.data.publicSignals);
+      const hash = await mintNFT(
+        proofResult.data.proof,
+        proofResult.data.publicSignals,
+      );
+      console.log("Minted NFT transaction hash:", hash);
 
       setPassword("");
       toast.success("NFTのミントが完了しました！", { id: "minting" });

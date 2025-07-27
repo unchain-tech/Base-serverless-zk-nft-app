@@ -1,19 +1,20 @@
 import {
-  type Instruction,
-  type MeeClient,
-  type MultichainSmartAccount,
-  createMeeClient,
-  toMultichainNexusAccount,
+  type NexusClient,
+  createBicoPaymasterClient,
+  createSmartAccountClient,
+  toNexusAccount,
 } from "@biconomy/abstractjs";
 import { useSign7702Authorization, useWallets } from "@privy-io/react-auth";
 import { ZKNFT_ABI } from "lib/abi";
-import {
-  NEXUS_IMPLEMENTATION,
-  USDC_ADDRESS,
-  ZKNFT_CONTRACT_ADDRESS,
-} from "lib/utils";
+import { ZKNFT_CONTRACT_ADDRESS } from "lib/utils";
 import { useCallback, useState } from "react";
-import { type Abi, createWalletClient, custom, http } from "viem";
+import {
+  type Abi,
+  createWalletClient,
+  custom,
+  encodeFunctionData,
+  http,
+} from "viem";
 import { baseSepolia } from "viem/chains";
 
 // ゼロ知識証明のデータ構造を定義する型
@@ -25,8 +26,7 @@ interface ZKProof {
 
 // Biconomyアカウントの状態を管理する型
 interface BiconomyAccountState {
-  smartAccount: MeeClient | null;
-  nexusAccount: MultichainSmartAccount | null;
+  nexusAccount: NexusClient | null;
   address: string | null;
   isLoading: boolean;
   error: string | null;
@@ -46,7 +46,6 @@ export const useBiconomy = () => {
 
   // Biconomyアカウントの状態を管理する
   const [accountState, setAccountState] = useState<BiconomyAccountState>({
-    smartAccount: null,
     nexusAccount: null,
     address: null,
     isLoading: false,
@@ -63,51 +62,43 @@ export const useBiconomy = () => {
   > => {
     try {
       setAccountState((prev) => ({ ...prev, isLoading: true, error: null }));
-      // base Sepoliaチェーンに切り替え
-      await embeddedWallet.switchChain(baseSepolia.id);
+
       const provider = await embeddedWallet.getEthereumProvider();
-      // WalletClientを作成
+      // Create a signer Object for the embedded wallet
       const walletClient = createWalletClient({
         account: embeddedWallet.address as `0x${string}`,
         chain: baseSepolia,
         transport: custom(provider),
       });
 
-      // Nexusアカウントを作成
-      const nexusAccount = await toMultichainNexusAccount({
-        chains: [baseSepolia],
-        transports: [http()],
-        signer: walletClient,
-        accountAddress: embeddedWallet.address as `0x${string}`,
+      // Create Smart Account Client
+      const nexusClient = createSmartAccountClient({
+        account: await toNexusAccount({
+          signer: walletClient,
+          chain: baseSepolia,
+          transport: http(),
+        }),
+        transport: http(
+          `https://bundler.biconomy.io/api/v3/${baseSepolia.id}/${process.env.NEXT_PUBLIC_BICONOMY_BUNDLER_API_KEY}`,
+        ),
+        paymaster: createBicoPaymasterClient({
+          paymasterUrl: `https://paymaster.biconomy.io/api/v2/${baseSepolia.id}/${process.env.NEXT_PUBLIC_BICONOMY_PAYMASTER_API_KEY}`,
+        }),
       });
+      // get the smart account address
+      const address = await nexusClient.account.address;
 
-      console.log("Nexus Account:", nexusAccount.signer.address);
-
-      const authorization = await signAuthorization({
-        contractAddress: NEXUS_IMPLEMENTATION,
-        chainId: 0,
-      });
-
-      console.log("Authorization:", authorization);
-
-      // Create Mee Client
-      const meeClient = await createMeeClient({
-        account: nexusAccount,
-        apiKey: process.env.NEXT_PUBLIC_MEE_API_KEY,
-      });
-
-      console.log("Biconomy Mee Client:", meeClient.account);
+      console.log("Nexus Account:", address);
       console.log("done initializing Biconomy account");
 
       setAccountState({
-        smartAccount: meeClient,
-        nexusAccount: nexusAccount,
+        nexusAccount: nexusClient,
         address: embeddedWallet.address,
         isLoading: false,
         error: null,
       });
 
-      return meeClient.account.signer.address;
+      return address;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
@@ -118,7 +109,7 @@ export const useBiconomy = () => {
       }));
       return null;
     }
-  }, [embeddedWallet, signAuthorization]);
+  }, [embeddedWallet]);
 
   /**
    * NFTをミントするためのメソッド
@@ -129,64 +120,47 @@ export const useBiconomy = () => {
    */
   const mintNFT = useCallback(
     async (proof: ZKProof, publicSignals: string[]): Promise<string | null> => {
-      if (!accountState.smartAccount) return Promise.resolve(null);
+      if (!accountState.nexusAccount) return Promise.resolve(null);
 
       console.log("Minting NFT with proof:", proof);
 
-      // 実行したいトランザクションデータの構築
-      const runtimeInstruction =
-        await accountState.nexusAccount?.buildComposable({
-          type: "default",
-          data: {
-            abi: ZKNFT_ABI as Abi,
-            functionName: "safeMint",
-            chainId: baseSepolia.id,
-            to: ZKNFT_CONTRACT_ADDRESS,
-            args: [
-              embeddedWallet.address,
-              proof.a,
-              proof.b,
-              proof.c,
-              publicSignals,
-            ],
-          },
-        });
-
-      const authorization = await signAuthorization({
-        contractAddress: NEXUS_IMPLEMENTATION,
-        chainId: 0,
+      // 実行したいトランザクションデータのfunction call dataを作成
+      const functionCallData = encodeFunctionData({
+        abi: ZKNFT_ABI as Abi,
+        functionName: "safeMint",
+        args: [
+          embeddedWallet.address,
+          proof.a,
+          proof.b,
+          proof.c,
+          publicSignals,
+        ],
       });
 
-      console.log("Authorization:", authorization);
+      console.log("Function call data:", functionCallData);
 
-      // スマートアカウントを使用してトランザクションを実行
-      const { hash } = await accountState.smartAccount.execute({
-        authorization,
-        delegate: true,
-        // Gas paid with USDC on Base Sepolia
-        feeToken: {
-          address: USDC_ADDRESS,
-          chainId: baseSepolia.id,
-        },
-
-        instructions: [runtimeInstruction as Instruction[]],
+      // トランザクションを送信
+      const hash = await accountState.nexusAccount.sendTransaction({
+        to: ZKNFT_CONTRACT_ADDRESS,
+        data: functionCallData,
+        chain: baseSepolia,
       });
 
       console.log("Submitted tx hash:", hash);
 
+      const receipt = await accountState.nexusAccount.waitForTransactionReceipt(
+        { hash },
+      );
+      console.log("Transaction receipt: ", receipt);
+
       return hash;
     },
-    [
-      accountState.smartAccount,
-      accountState.nexusAccount,
-      embeddedWallet?.address,
-      signAuthorization,
-    ],
+    [accountState.nexusAccount, embeddedWallet?.address],
   );
 
   return {
     // アカウント状態
-    smartAccount: accountState.smartAccount,
+    smartAccount: accountState.nexusAccount,
     address: accountState.address,
     isLoading: accountState.isLoading,
     error: accountState.error,
