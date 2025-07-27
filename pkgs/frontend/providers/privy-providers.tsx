@@ -1,7 +1,7 @@
 "use client";
 
 import { PrivyProvider } from "@privy-io/react-auth";
-import React from "react";
+import type React from "react";
 
 interface PrivyProvidersProps {
   children: React.ReactNode;

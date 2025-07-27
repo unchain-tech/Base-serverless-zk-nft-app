@@ -97,12 +97,11 @@ function AuthenticatedDashboard() {
         throw new Error(proofResult.error || "failed to generate proof");
       }
 
-      console.log("Proof Result:", proofResult.data);
-
       toast.loading("NFTをミント中...", { id: "minting" });
 
-      // Biconomyを使ってNFTをミント
+      // Biconomyを初期化してSmart Walletを作成する
       await initializeBiconomyAccount();
+      // NFTをミントする
       await mintNFT(proofResult.data.proof, proofResult.data.publicSignals);
 
       setPassword("");

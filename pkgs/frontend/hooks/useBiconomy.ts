@@ -56,13 +56,14 @@ export const useBiconomy = () => {
       // base Sepoliaチェーンに切り替え
       await embeddedWallet.switchChain(baseSepolia.id);
       const provider = await embeddedWallet.getEthereumProvider();
-
+      // WalletClientを作成
       const walletClient = createWalletClient({
         account: embeddedWallet.address as `0x${string}`,
         chain: baseSepolia,
         transport: custom(provider),
       });
 
+      // Nexusアカウントを作成
       const nexusAccount = await toMultichainNexusAccount({
         chains: [baseSepolia],
         transports: [http()],
@@ -70,11 +71,12 @@ export const useBiconomy = () => {
         accountAddress: embeddedWallet.address as `0x${string}`,
       });
 
-      console.log("Nexus Account:", nexusAccount);
-
+      console.log("Nexus Account:", nexusAccount.signer.address);
+      // Create Mee Client
       const meeClient = await createMeeClient({ account: nexusAccount });
 
       console.log("Biconomy Mee Client:", meeClient.account);
+      console.log("done initializing Biconomy account");
 
       setAccountState({
         smartAccount: meeClient,
