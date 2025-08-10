@@ -1,7 +1,7 @@
 import "@nomicfoundation/hardhat-toolbox-viem";
 import * as dotenv from "dotenv";
 import type { HardhatUserConfig } from "hardhat/config";
-import "./tasks";
+
 
 dotenv.config();
 

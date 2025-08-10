@@ -18,9 +18,6 @@
     "coverage": "SOLIDITY_COVERAGE=true npx hardhat coverage",
     "deploy:ZKNFT": "npx hardhat ignition deploy ./ignition/modules/ZKNFT.ts --verify",
     "local": "npx hardhat node",
-    "getBalance": "npx hardhat getBalance",
-    "getChainInfo": "npx hardhat getChainInfo",
-    "totalSupply": "npx hardhat totalSupply",
     "mint": "npx hardhat mint"
   },
   "devDependencies": {
