@@ -16,6 +16,6 @@ export const NEXUS_IMPLEMENTATION =
 
 export const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
 
-// ZKNFTコントラクトのアドレス
+// ZKNFTコントラクトのアドレス(ここの値は自分が実際にデプロイしたコントラクトのアドレスに置き換えてください。)
 export const ZKNFT_CONTRACT_ADDRESS =
-  "0xa9Bf293B85E46079665019BE17a67B8D925572f7";
+  "";
