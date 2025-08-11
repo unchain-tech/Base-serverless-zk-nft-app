@@ -1,0 +1,209 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [complete]
+  pull_request:
+    branches: [complete]
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      pnpm-cache-dir: ${{ steps.pnpm-cache.outputs.pnpm-cache-dir }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "pnpm-cache-dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.pnpm-cache-dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+  smart-contract:
+    name: Smart Contract Build & Test
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+
+      - name: Restore pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ needs.setup.outputs.pnpm-cache-dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build smart contracts
+        run: pnpm backend compile
+
+      - name: Test smart contracts
+        run: pnpm backend test
+
+  circuit:
+    name: Circuit Test
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+
+      - name: Restore pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ needs.setup.outputs.pnpm-cache-dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install circom
+        run: |
+          wget -qO- https://github.com/iden3/circom/releases/download/v2.1.9/circom-linux-amd64.tar.gz | tar xvz
+          sudo mv circom /usr/local/bin
+
+      - name: Test circuits
+        run: pnpm circuit test
+
+  frontend:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+
+      - name: Restore pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ needs.setup.outputs.pnpm-cache-dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check frontend
+        run: pnpm frontend type-check
+
+      - name: Build frontend
+        run: pnpm frontend build
+
+  lint-and-format:
+    name: Lint & Format Check
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+
+      - name: Restore pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ needs.setup.outputs.pnpm-cache-dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check Biome formatting
+        run: pnpm run format --check
+
+      - name: Lint frontend
+        run: pnpm frontend lint
+
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [smart-contract, circuit, frontend, lint-and-format]
+    if: always()
+    steps:
+      - name: Check all jobs status
+        run: |
+          if [[ "${{ needs.smart-contract.result }}" == "success" && 
+                "${{ needs.circuit.result }}" == "success" && 
+                "${{ needs.frontend.result }}" == "success" && 
+                "${{ needs.lint-and-format.result }}" == "success" ]]; then
+            echo "✅ All CI jobs passed successfully!"
+            exit 0
+          else
+            echo "❌ Some CI jobs failed:"
+            echo "Smart Contract: ${{ needs.smart-contract.result }}"
+            echo "Circuit: ${{ needs.circuit.result }}"
+            echo "Frontend: ${{ needs.frontend.result }}"
+            echo "Lint & Format: ${{ needs.lint-and-format.result }}"
+            exit 1
+          fi
