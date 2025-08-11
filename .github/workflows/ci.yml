@@ -145,7 +145,8 @@ jobs:
       - name: Build frontend
         run: pnpm frontend build
         env:
-          NEXT_PUBLIC_PRIVY_APP_ID: your_privy_app_id_here
+          # ダミー値
+          NEXT_PUBLIC_PRIVY_APP_ID: clsy0a89f00ih13j1tbktr765
 
   lint-and-format:
     name: Lint & Format Check
