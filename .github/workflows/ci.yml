@@ -107,11 +107,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install circom
-        run: |
-          wget -qO- https://github.com/iden3/circom/releases/download/v2.1.9/circom-linux-amd64.tar.gz | tar xvz
-          sudo mv circom /usr/local/bin
-
       - name: Test circuits
         run: pnpm circuit test
 
@@ -149,6 +144,8 @@ jobs:
 
       - name: Build frontend
         run: pnpm frontend build
+        env:
+          NEXT_PUBLIC_PRIVY_APP_ID: your_privy_app_id_here
 
   lint-and-format:
     name: Lint & Format Check
