@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["node_modules", "artifacts", "cache"]
+    "ignore": ["node_modules", "artifacts", "cache", "./pkgs/backend/ignition/deployments/**", "./pkgs/circuit/data/calldata.json"]
   },
   "formatter": {
     "enabled": true,
